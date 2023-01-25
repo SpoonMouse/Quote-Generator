@@ -1,69 +1,71 @@
-const quoteContainer = document.getElementById('quote-container');
-const quoteText = document.getElementById('quote');
-const authorText = document.getElementById('author');
-const twitterBtn = document.getElementById('twitter');
-const newQuoteBtn = document.getElementById('new-quote');
+const quoteContainer = document.getElementById("quote-container");
+const authorText = document.getElementById("author");
+const quoteText = document.getElementById("quote");
+const twitterBtn = document.getElementById("twitter");
+const newQuoteBtn = document.getElementById("new-quote");
+const loader = document.getElementById("loader");
+
+// Api array
+let apiQuotes = [];
 
 
+// Loading Spinner Functions
+function showLoaderSpinner() {
+    loader.hidden = false;
+    quoteContainer.hidden = true;
+}
 
+function hideLoaderSpinner() {
+    loader.hidden = true;
+    quoteContainer.hidden = false;
+}
 
-
-
-
-
-
-let apiQuotes = []
-
+// Generates random quote from array
 function newQuote() {
-    const quote = apiQuotes[Math.floor(Math.random() * apiQuotes.length)];
-    // Check if author is blank and replace it with 'Unknown'
-    if (!quote.author) {
-        authorText.textContent = 'Unknown';
+    showLoaderSpinner();
+       const quote = apiQuotes[Math.floor(Math.random() * apiQuotes.length)];
+     // Setting quotes w/o author to say Unknown
+     if (!quote.author) {
+        authorText.textContent = "Unknown"
     } else {
         authorText.textContent = quote.author;
     }
-    // Check Quote Length for styling
+    // Styling longer quotes to look tidy
     if (quote.text.length > 120) {
-        quoteText.classList.add('long-quote');
+        quoteText.classList.add("long-quote");
     } else {
-        quoteText.classList.remove('long-quote');
+        quoteText.classList.remove("long-quote");
+        
+
     }
     quoteText.textContent = quote.text;
+    hideLoaderSpinner();
 }
 
-// Get quotes from API
-
+// Fetching Quotes from API
 async function getQuotes() {
     const apiUrl = 'https://jacintodesign.github.io/quotes-api/data/quotes.json';
     try {
         const response = await fetch(apiUrl);
         apiQuotes = await response.json();
         newQuote();
-    } catch(error) {
-
+    } catch (error) {
+        // Attempt to reload if error occurs
+        newQuote();
     }
 }
 
-// Tweet a quote
+
+
+// Tweet Quote Function
 function tweetQuote() {
     const twitterUrl = `https://twitter.com/intent/tweet?text=${quoteText.textContent} - ${authorText.textContent}`;
-    window.open(twitterUrl, '_blank');  
+    window.open(twitterUrl, '_blank');
 }
 
-
-// Event Listeners
+// Event Listeners for both buttons
 newQuoteBtn.addEventListener('click', newQuote);
 twitterBtn.addEventListener('click', tweetQuote);
 
-
-
-
-
-
-// on page load
+// Call main function on page load
 getQuotes();
-
-
-
-
-
